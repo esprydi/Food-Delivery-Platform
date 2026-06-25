@@ -8,6 +8,8 @@ bin/
 
 # Environment files
 .env
+.env.*
+!.env.example
 
 # Go workspace file
 go.work
