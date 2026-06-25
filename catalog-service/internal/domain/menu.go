@@ -18,4 +18,5 @@ type MenuRepository interface {
 	GetByRestaurantID(ctx context.Context, restaurantID string) ([]MenuItem, error)
 	GetByID(ctx context.Context, id string) (*MenuItem, error)
 	Update(ctx context.Context, menu *MenuItem) error
+	Delete(ctx context.Context, id string) error
 }

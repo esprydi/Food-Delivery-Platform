@@ -40,3 +40,7 @@ func (r *menuRepository) GetByID(ctx context.Context, id string) (*domain.MenuIt
 func (r *menuRepository) Update(ctx context.Context, menu *domain.MenuItem) error {
 	return r.db.WithContext(ctx).Save(menu).Error
 }
+
+func (r *menuRepository) Delete(ctx context.Context, id string) error {
+	return r.db.WithContext(ctx).Delete(&domain.MenuItem{}, "id = ?", id).Error
+}

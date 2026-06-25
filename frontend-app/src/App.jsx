@@ -12,12 +12,8 @@ const ProtectedRoute = ({ children }) => {
   if (!token) {
     return <Navigate to="/auth" replace />;
   }
-  return children;
-};
-
-function App() {
   return (
-    <Router>
+    <>
       <div className="navbar container">
         <div className="navbar-brand">FoodDelivery</div>
         <div className="navbar-nav">
@@ -28,6 +24,14 @@ function App() {
           }}>Logout</a>
         </div>
       </div>
+      {children}
+    </>
+  );
+};
+
+function App() {
+  return (
+    <Router>
       
       <Routes>
         <Route path="/auth" element={<Auth />} />

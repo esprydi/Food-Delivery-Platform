@@ -48,9 +48,12 @@ export default function Auth() {
   };
 
   return (
-    <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-      <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '400px' }}>
-        <h2 className="text-center">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
+    <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '3rem 1rem' }}>
+      <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '400px', margin: 'auto' }}>
+        <div className="text-center mb-4">
+          <h1 className="navbar-brand" style={{ fontSize: '2.2rem', marginBottom: '0.5rem', display: 'inline-block' }}>FoodDelivery</h1>
+          <p style={{ color: 'var(--color-text-muted)', fontSize: '1rem', marginTop: '0' }}>{isLogin ? 'Welcome back, please sign in' : 'Create your new account'}</p>
+        </div>
         {error && <div style={{ color: error.includes('successful') ? 'var(--color-success)' : 'var(--color-danger)', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
         
         <form onSubmit={handleSubmit}>

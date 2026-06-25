@@ -12,6 +12,7 @@ type CatalogUsecase interface {
 	GetRestaurantMenus(ctx context.Context, restaurantID string) ([]domain.MenuItem, error)
 	AddMenu(ctx context.Context, ownerID, restaurantID, name, description string, price float64) (*domain.MenuItem, error)
 	UpdateMenu(ctx context.Context, ownerID, menuID, name, description string, price float64) (*domain.MenuItem, error)
+	DeleteMenu(ctx context.Context, ownerID, menuID string) error
 	CreateRestaurant(ctx context.Context, ownerID, name, address string) (*domain.Restaurant, error)
 	GetMyRestaurant(ctx context.Context, ownerID string) (*domain.Restaurant, error)
 }
@@ -114,4 +115,22 @@ func (u *catalogUsecase) UpdateMenu(ctx context.Context, ownerID, menuID, name, 
 	}
 
 	return menu, nil
+}
+
+func (u *catalogUsecase) DeleteMenu(ctx context.Context, ownerID, menuID string) error {
+	menu, err := u.menuRepo.GetByID(ctx, menuID)
+	if err != nil {
+		return errors.New("menu not found")
+	}
+
+	restaurant, err := u.restaurantRepo.GetByID(ctx, menu.RestaurantID)
+	if err != nil {
+		return errors.New("restaurant not found")
+	}
+
+	if restaurant.OwnerID != ownerID {
+		return errors.New("unauthorized: you don't own this restaurant")
+	}
+
+	return u.menuRepo.Delete(ctx, menuID)
 }

@@ -63,6 +63,16 @@ a:hover {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
+/* Cart Panel */
+.cart-panel {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-glass-border);
+  border-top: 4px solid var(--color-primary);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
 /* Buttons */
 .btn {
   display: inline-block;
@@ -109,12 +119,12 @@ a:hover {
 
 /* Inputs */
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .form-label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
   font-size: 0.9rem;
   color: var(--color-text-muted);
 }

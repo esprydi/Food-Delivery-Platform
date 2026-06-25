@@ -29,6 +29,7 @@ func NewCatalogHandler(e *echo.Echo, usecase usecase.CatalogUsecase, jwtMiddlewa
 	merchantGroup.Use(RoleMiddleware("MERCHANT"))
 	merchantGroup.POST("/menus", handler.AddMenu)
 	merchantGroup.PUT("/menus/:id", handler.UpdateMenu)
+	merchantGroup.DELETE("/menus/:id", handler.DeleteMenu)
 	merchantGroup.POST("/restaurants", handler.CreateRestaurant)
 	merchantGroup.GET("/restaurants/me", handler.GetMyRestaurant)
 }
@@ -141,4 +142,16 @@ func (h *catalogHandler) UpdateMenu(c echo.Context) error {
 	}
 
 	return successResponse(c, http.StatusOK, "Menu item updated successfully", menu)
+}
+
+func (h *catalogHandler) DeleteMenu(c echo.Context) error {
+	ownerID := c.Get("user_id").(string)
+	menuID := c.Param("id")
+
+	err := h.usecase.DeleteMenu(c.Request().Context(), ownerID, menuID)
+	if err != nil {
+		return errorResponse(c, http.StatusForbidden, err.Error())
+	}
+
+	return successResponse(c, http.StatusOK, "Menu item deleted successfully", nil)
 }

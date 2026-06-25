@@ -95,6 +95,19 @@ export default function Dashboard() {
     });
   };
 
+  const handleDeleteMenu = async (menuId) => {
+    if (window.confirm("Are you sure you want to delete this menu?")) {
+      try {
+        const res = await catalogApi.delete(`/merchant/menus/${menuId}`);
+        if (res.data.success) {
+          fetchMenus(restaurant.id);
+        }
+      } catch (err) {
+        alert("Failed to delete menu: " + (err.response?.data?.error || err.message));
+      }
+    }
+  };
+
   const cancelEdit = () => {
     setEditingMenuId(null);
     setMenuForm({ name: '', description: '', price: '' });
@@ -163,13 +176,34 @@ export default function Dashboard() {
             {menus.length === 0 ? <p className="text-muted mt-2">No menus added yet.</p> : (
               <div className="grid grid-cols-2 mt-4">
                 {menus.map(m => (
-                  <div key={m.id} className="glass-panel d-flex flex-col justify-between">
-                    <div>
-                      <h4>{m.name}</h4>
-                      <p className="text-muted">{m.description}</p>
-                      <strong style={{ color: 'var(--color-success)' }}>Rp {m.price.toLocaleString()}</strong>
+                  <div key={m.id} className="glass-panel" style={{ position: 'relative', padding: '20px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <div className="d-flex justify-between align-start" style={{ gap: '15px' }}>
+                      <div style={{ flex: 1 }}>
+                        <h4 style={{ margin: '0 0 8px 0', fontSize: '1.2rem' }}>{m.name}</h4>
+                        <p className="text-muted" style={{ margin: '0 0 15px 0', fontSize: '0.9rem', lineHeight: '1.4' }}>{m.description}</p>
+                      </div>
+                      <div className="d-flex" style={{ gap: '8px' }}>
+                        <button 
+                          className="btn" 
+                          style={{ padding: '0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px' }} 
+                          onClick={() => handleEditClick(m)} 
+                          title="Edit"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        </button>
+                        <button 
+                          className="btn" 
+                          style={{ padding: '0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', backgroundColor: 'rgba(220, 53, 69, 0.9)', color: 'white', border: 'none' }} 
+                          onClick={() => handleDeleteMenu(m.id)} 
+                          title="Delete"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                      </div>
                     </div>
-                    <button className="btn mt-2" onClick={() => handleEditClick(m)}>Edit</button>
+                    <div style={{ marginTop: 'auto' }}>
+                      <strong style={{ color: 'var(--color-success)', fontSize: '1.1rem' }}>Rp {m.price.toLocaleString()}</strong>
+                    </div>
                   </div>
                 ))}
               </div>
