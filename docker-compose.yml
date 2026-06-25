@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: fd_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secretpassword
+      # Kita biarkan DB utama default, nanti masing-microservice 
+      # akan membuat schema/db-nya sendiri saat berjalan
+      POSTGRES_DB: food_delivery
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - fd_network
+
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: fd_rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"   # AMQP protocol port
+      - "15672:15672" # Management UI port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - fd_network
+
+volumes:
+  pgdata:
+  rabbitmq_data:
+
+networks:
+  fd_network:
+    driver: bridge
