@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"notification-service/config"
+	"notification-service/internal/mailer"
 
 	"github.com/labstack/echo/v4"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -38,22 +39,18 @@ func main() {
 	defer ch.Close()
 
 	// Ensure exchanges exist
-	err = ch.ExchangeDeclare("order_exchange", "direct", true, false, false, false, nil)
-	if err != nil {
-		slog.Error("Failed to declare exchange", "error", err)
-	}
-	err = ch.ExchangeDeclare("payment_exchange", "direct", true, false, false, false, nil)
+	err = ch.ExchangeDeclare("food_delivery_events", "topic", true, false, false, false, nil)
 	if err != nil {
 		slog.Error("Failed to declare exchange", "error", err)
 	}
 
 	// Setup Queues
 	qOrder, _ := ch.QueueDeclare("notification_order_queue", true, false, false, false, nil)
-	ch.QueueBind(qOrder.Name, "order.created", "order_exchange", false, nil)
-	ch.QueueBind(qOrder.Name, "order.paid", "order_exchange", false, nil)
+	ch.QueueBind(qOrder.Name, "order.created", "food_delivery_events", false, nil)
+	ch.QueueBind(qOrder.Name, "order.paid", "food_delivery_events", false, nil)
 
 	qPayment, _ := ch.QueueDeclare("notification_payment_queue", true, false, false, false, nil)
-	ch.QueueBind(qPayment.Name, "payment.success", "payment_exchange", false, nil)
+	ch.QueueBind(qPayment.Name, "payment.success", "food_delivery_events", false, nil)
 
 	msgsOrder, _ := ch.Consume(qOrder.Name, "", false, false, false, false, nil)
 	msgsPayment, _ := ch.Consume(qPayment.Name, "", false, false, false, false, nil)
@@ -72,6 +69,18 @@ func main() {
 			var payload map[string]interface{}
 			_ = json.Unmarshal(d.Body, &payload)
 			slog.Info("🔔 NOTIFICATION [PAYMENT]: "+d.RoutingKey, "payload", payload)
+			
+			// Extract email and orderID
+			if eventPayload, ok := payload["payload"].(map[string]interface{}); ok {
+				orderID, _ := eventPayload["order_id"].(string)
+				customerEmail, _ := eventPayload["customer_email"].(string)
+
+				if customerEmail != "" && orderID != "" {
+					// Send the email
+					go mailer.SendReceiptEmail(cfg, customerEmail, orderID)
+				}
+			}
+
 			d.Ack(false)
 		}
 	}()

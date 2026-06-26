@@ -138,7 +138,7 @@ export default function Dashboard() {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const res = await orderApi.put(`/orders/${orderId}/status`, { status: newStatus });
+      const res = await orderApi.put(`/orders/merchant/${orderId}/status`, { status: newStatus });
       if (res.data.success) {
         fetchOrders(restaurant.id);
       }

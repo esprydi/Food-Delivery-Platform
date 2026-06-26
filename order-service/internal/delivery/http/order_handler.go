@@ -67,6 +67,7 @@ type CheckoutRequest struct {
 
 func (h *orderHandler) Checkout(c echo.Context) error {
 	customerID := c.Get("user_id").(string) // Extract from JWT via RoleMiddleware
+	customerEmail := c.Get("email").(string)
 
 	var req CheckoutRequest
 	if err := c.Bind(&req); err != nil {
@@ -83,7 +84,7 @@ func (h *orderHandler) Checkout(c echo.Context) error {
 		})
 	}
 
-	order, err := h.usecase.Checkout(c.Request().Context(), customerID, req.RestaurantID, req.DeliveryAddress, items)
+	order, err := h.usecase.Checkout(c.Request().Context(), customerID, customerEmail, req.RestaurantID, req.DeliveryAddress, items)
 	if err != nil {
 		return errorResponse(c, http.StatusInternalServerError, err.Error())
 	}

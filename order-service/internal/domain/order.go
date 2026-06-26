@@ -20,6 +20,7 @@ const (
 type Order struct {
 	ID              string      `json:"id" db:"id" gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
 	CustomerID      string      `json:"customer_id" db:"customer_id"`
+	CustomerEmail   string      `json:"customer_email" db:"customer_email"`
 	RestaurantID    string      `json:"restaurant_id" db:"restaurant_id"`
 	Status          OrderStatus `json:"status" db:"status"`
 	TotalAmount     float64     `json:"total_amount" db:"total_amount"`
@@ -47,7 +48,7 @@ type OrderRepository interface {
 }
 
 type OrderUsecase interface {
-	Checkout(ctx context.Context, customerID, restaurantID, deliveryAddress string, items []OrderItem) (*Order, error)
+	Checkout(ctx context.Context, customerID string, customerEmail string, restaurantID string, deliveryAddress string, items []OrderItem) (*Order, error)
 	GetCustomerOrders(ctx context.Context, customerID string) ([]Order, error)
 	GetMerchantOrders(ctx context.Context, restaurantID string) ([]Order, error)
 	UpdateOrderStatus(ctx context.Context, orderID string, status OrderStatus) error

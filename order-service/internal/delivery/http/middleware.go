@@ -29,6 +29,11 @@ func RoleMiddleware(requiredRole string) echo.MiddlewareFunc {
 			if sub, ok := claims["sub"].(string); ok {
 				c.Set("user_id", sub)
 			}
+			
+			// Store user email in context
+			if email, ok := claims["email"].(string); ok {
+				c.Set("email", email)
+			}
 
 			return next(c)
 		}

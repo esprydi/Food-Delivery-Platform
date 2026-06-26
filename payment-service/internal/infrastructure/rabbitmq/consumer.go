@@ -105,12 +105,16 @@ func (c *EventConsumer) StartConsuming(ctx context.Context) error {
 					payload := event["payload"].(map[string]interface{})
 					orderID := payload["order_id"].(string)
 					customerID := payload["customer_id"].(string)
+					customerEmail := ""
+					if val, ok := payload["customer_email"].(string); ok {
+						customerEmail = val
+					}
 					amount := payload["total_amount"].(float64)
 
 					slog.Info("Consumed ORDER_CREATED event", "order_id", orderID)
 
 					// Process
-					err := c.usecase.ProcessOrderCreated(context.Background(), orderID, customerID, amount)
+					err := c.usecase.ProcessOrderCreated(context.Background(), orderID, customerID, customerEmail, amount)
 					if err != nil {
 						slog.Error("Failed to process order created", "error", err)
 						// Might want to retry by Nacking, but for prototyping we'll just log

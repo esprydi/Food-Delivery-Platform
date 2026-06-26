@@ -24,7 +24,7 @@ func NewPaymentUsecase(repo domain.PaymentRepository, publisher domain.PaymentEv
 	}
 }
 
-func (u *paymentUsecase) ProcessOrderCreated(ctx context.Context, orderID string, customerID string, amount float64) error {
+func (u *paymentUsecase) ProcessOrderCreated(ctx context.Context, orderID string, customerID string, customerEmail string, amount float64) error {
 	// 1. Check if payment already exists
 	_, err := u.paymentRepo.GetByOrderID(ctx, orderID)
 	if err == nil {
@@ -39,7 +39,8 @@ func (u *paymentUsecase) ProcessOrderCreated(ctx context.Context, orderID string
 			GrossAmt: int64(amount),
 		},
 		CustomerDetail: &midtrans.CustomerDetails{
-			FName: "Customer", // You'd ideally pass the actual customer details
+			FName: "Customer",
+			Email: customerEmail,
 		},
 	}
 
@@ -56,10 +57,11 @@ func (u *paymentUsecase) ProcessOrderCreated(ctx context.Context, orderID string
 
 	// 3. Save Payment to DB
 	payment := &domain.Payment{
-		OrderID: orderID,
-		Amount:  amount,
-		Status:  domain.PaymentStatusPending,
-		SnapURL: snapUrl,
+		OrderID:       orderID,
+		CustomerEmail: customerEmail,
+		Amount:        amount,
+		Status:        domain.PaymentStatusPending,
+		SnapURL:       snapUrl,
 	}
 
 	return u.paymentRepo.Create(ctx, payment)
@@ -92,7 +94,8 @@ func (u *paymentUsecase) HandleMidtransNotification(ctx context.Context, orderID
 
 	// 4. Publish Event if Success
 	if newStatus == domain.PaymentStatusSuccess && payment.Status != domain.PaymentStatusSuccess {
-		err = u.eventPublisher.PublishPaymentSuccess(ctx, orderID)
+		// Publish event
+		err = u.eventPublisher.PublishPaymentSuccess(ctx, payment)
 		if err != nil {
 			slog.Error("Failed to publish payment success", "error", err)
 			return err

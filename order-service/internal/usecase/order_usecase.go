@@ -19,7 +19,7 @@ func NewOrderUsecase(repo domain.OrderRepository, publisher domain.EventPublishe
 	}
 }
 
-func (u *orderUsecase) Checkout(ctx context.Context, customerID, restaurantID, deliveryAddress string, items []domain.OrderItem) (*domain.Order, error) {
+func (u *orderUsecase) Checkout(ctx context.Context, customerID string, customerEmail string, restaurantID string, deliveryAddress string, items []domain.OrderItem) (*domain.Order, error) {
 	if len(items) == 0 {
 		return nil, errors.New("cannot create order with empty items")
 	}
@@ -34,6 +34,7 @@ func (u *orderUsecase) Checkout(ctx context.Context, customerID, restaurantID, d
 
 	order := &domain.Order{
 		CustomerID:      customerID,
+		CustomerEmail:   customerEmail,
 		RestaurantID:    restaurantID,
 		Status:          domain.StatusPending,
 		TotalAmount:     totalAmount,

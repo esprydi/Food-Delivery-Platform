@@ -33,14 +33,15 @@ func NewRabbitMQPublisher(url string) (domain.PaymentEventPublisher, error) {
 	}, nil
 }
 
-func (p *EventPublisher) PublishPaymentSuccess(ctx context.Context, orderID string) error {
+func (p *EventPublisher) PublishPaymentSuccess(ctx context.Context, payment *domain.Payment) error {
 	payload := map[string]interface{}{
-		"event_id":   orderID + "_paid",
+		"event_id":   payment.OrderID + "_paid",
 		"event_type": "PAYMENT_SUCCESS",
 		"timestamp":  time.Now().Format(time.RFC3339),
 		"payload": map[string]interface{}{
-			"order_id": orderID,
-			"status":   "SUCCESS",
+			"order_id":       payment.OrderID,
+			"customer_email": payment.CustomerEmail,
+			"status":         "SUCCESS",
 		},
 	}
 
@@ -65,6 +66,6 @@ func (p *EventPublisher) PublishPaymentSuccess(ctx context.Context, orderID stri
 		return err
 	}
 
-	slog.Info("Successfully published PaymentSuccess event", "order_id", orderID)
+	slog.Info("Successfully published PaymentSuccess event", "order_id", payment.OrderID)
 	return nil
 }

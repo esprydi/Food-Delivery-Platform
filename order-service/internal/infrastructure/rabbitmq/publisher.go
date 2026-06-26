@@ -54,10 +54,11 @@ func (p *rabbitMQPublisher) PublishOrderCreated(ctx context.Context, order *doma
 		"event_type": "ORDER_CREATED",
 		"timestamp":  time.Now().Format(time.RFC3339),
 		"payload": map[string]interface{}{
-			"order_id":      order.ID,
-			"customer_id":   order.CustomerID,
-			"restaurant_id": order.RestaurantID,
-			"total_amount":  order.TotalAmount,
+			"order_id":       order.ID,
+			"customer_id":    order.CustomerID,
+			"customer_email": order.CustomerEmail,
+			"restaurant_id":  order.RestaurantID,
+			"total_amount":   order.TotalAmount,
 		},
 	}
 

@@ -9,6 +9,10 @@ import (
 type Config struct {
 	RabbitMQURL string
 	Port        string
+	SMTPHost    string
+	SMTPPort    string
+	SMTPUser    string
+	SMTPPass    string
 }
 
 func LoadConfig() (*Config, error) {
@@ -27,5 +31,9 @@ func LoadConfig() (*Config, error) {
 	return &Config{
 		RabbitMQURL: rmq,
 		Port:        port,
+		SMTPHost:    os.Getenv("SMTP_HOST"),
+		SMTPPort:    os.Getenv("SMTP_PORT"),
+		SMTPUser:    os.Getenv("SMTP_USER"),
+		SMTPPass:    os.Getenv("SMTP_PASS"),
 	}, nil
 }
