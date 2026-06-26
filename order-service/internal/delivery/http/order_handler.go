@@ -26,6 +26,14 @@ func NewOrderHandler(e *echo.Echo, usecase domain.OrderUsecase, jwtMiddleware ec
 	
 	customerGroup.POST("", handler.Checkout)
 	customerGroup.GET("/customer", handler.GetCustomerOrders)
+
+	// Protected routes (Merchant only)
+	merchantGroup := v1.Group("/orders/merchant")
+	merchantGroup.Use(jwtMiddleware)
+	merchantGroup.Use(RoleMiddleware("MERCHANT"))
+	
+	merchantGroup.GET("/:restaurant_id", handler.GetMerchantOrders)
+	merchantGroup.PUT("/:order_id/status", handler.UpdateOrderStatus)
 }
 
 func successResponse(c echo.Context, statusCode int, message string, data interface{}) error {
@@ -92,4 +100,37 @@ func (h *orderHandler) GetCustomerOrders(c echo.Context) error {
 	}
 
 	return successResponse(c, http.StatusOK, "Customer orders retrieved", orders)
+}
+
+func (h *orderHandler) GetMerchantOrders(c echo.Context) error {
+	restaurantID := c.Param("restaurant_id")
+
+	orders, err := h.usecase.GetMerchantOrders(c.Request().Context(), restaurantID)
+	if err != nil {
+		return errorResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	return successResponse(c, http.StatusOK, "Merchant orders retrieved", orders)
+}
+
+type UpdateOrderStatusRequest struct {
+	Status string `json:"status"`
+}
+
+func (h *orderHandler) UpdateOrderStatus(c echo.Context) error {
+	orderID := c.Param("order_id")
+	var req UpdateOrderStatusRequest
+	if err := c.Bind(&req); err != nil {
+		return errorResponse(c, http.StatusBadRequest, "Invalid request body")
+	}
+
+	// Validate status conversion
+	status := domain.OrderStatus(req.Status)
+	
+	err := h.usecase.UpdateOrderStatus(c.Request().Context(), orderID, status)
+	if err != nil {
+		return errorResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	return successResponse(c, http.StatusOK, "Order status updated successfully", nil)
 }

@@ -59,6 +59,15 @@ func (u *orderUsecase) GetCustomerOrders(ctx context.Context, customerID string)
 	return u.orderRepo.GetByCustomerID(ctx, customerID)
 }
 
+func (u *orderUsecase) GetMerchantOrders(ctx context.Context, restaurantID string) ([]domain.Order, error) {
+	return u.orderRepo.GetByRestaurantID(ctx, restaurantID)
+}
+
+func (u *orderUsecase) UpdateOrderStatus(ctx context.Context, orderID string, status domain.OrderStatus) error {
+	// Optional: add validation here if needed (e.g. only PAID can become PREPARING)
+	return u.orderRepo.UpdateStatus(ctx, orderID, status)
+}
+
 func (u *orderUsecase) MarkOrderAsPaid(ctx context.Context, orderID string) error {
 	return u.orderRepo.UpdateStatus(ctx, orderID, domain.StatusPaid)
 }

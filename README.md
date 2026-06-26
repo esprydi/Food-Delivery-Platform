@@ -81,5 +81,26 @@ The React app will be accessible at `http://localhost:5173`.
 ## 🔗 Midtrans Integration Note
 This project uses Midtrans Sandbox. Ensure that the Server Key in `payment-service/.env` is valid. All successful payments will trigger a RabbitMQ event from `payment-service` to `order-service` to automatically update the order status.
 
+### Cara Menggunakan Simulator Pembayaran Midtrans (Sandbox)
+Saat Anda mengeklik tombol **Pay Now**, halaman pembayaran simulasi akan muncul. Berikut cara agar transaksinya menjadi "Success":
+
+1. **Menggunakan Kartu Kredit (Paling Cepat):**
+   - Pilih metode **Credit Card**.
+   - Masukkan nomor kartu dummy: `4811111111111114`
+   - Isi Expiry Date: `12/28` dan CVV: `123`
+   - Klik **Pay Now**. Pada pop-up 3D Secure, masukkan password bebas (misal: `112233`) dan klik **OK**.
+
+2. **Menggunakan GoPay / QRIS:**
+   - Pilih metode **GoPay / QRIS**.
+   - Klik tombol **"Simulate Payment with GoPay"** atau tombol **"Success"** yang biasanya muncul di bagian bawah/atas QR Code pada mode sandbox.
+
+3. **Menggunakan Virtual Account (BCA/Mandiri/dsb):**
+   - Pilih metode Virtual Account dan *copy* nomor VA yang didapat.
+   - Buka tab baru ke [https://simulator.sandbox.midtrans.com](https://simulator.sandbox.midtrans.com).
+   - Pilih bank yang sesuai, masukkan nomor VA, klik **Inquire**, lalu klik **Pay**.
+
+**Penting untuk Localhost:** 
+Karena aplikasi berjalan di `localhost`, server Midtrans *tidak bisa* mengirimkan notifikasi (*Webhook*) pembayaran sukses ke laptop Anda. Jika Anda ingin status Order otomatis berubah menjadi **PAID** setelah melakukan simulasi di atas, Anda harus mengirim permintaan Webhook secara manual (via `curl` atau Postman) ke `localhost:8084/api/v1/payments/midtrans/notification`, atau menggunakan layanan seperti *Ngrok* untuk meng-online-kan localhost Anda.
+
 ## 📝 License
 MIT License

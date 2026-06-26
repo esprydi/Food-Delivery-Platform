@@ -225,6 +225,69 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get Merchant Orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8083/api/v1/orders/merchant/:restaurant_id",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8083",
+							"path": ["api", "v1", "orders", "merchant", ":restaurant_id"],
+							"variable": [
+								{
+									"key": "restaurant_id",
+									"value": "restaurant_uuid_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"PREPARING\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8083/api/v1/orders/:order_id/status",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8083",
+							"path": ["api", "v1", "orders", ":order_id", "status"],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": "order_uuid_here"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

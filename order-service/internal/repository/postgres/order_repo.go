@@ -34,7 +34,13 @@ func (r *orderRepository) GetByID(ctx context.Context, id string) (*domain.Order
 
 func (r *orderRepository) GetByCustomerID(ctx context.Context, customerID string) ([]domain.Order, error) {
 	var orders []domain.Order
-	err := r.db.WithContext(ctx).Preload("Items").Where("customer_id = ?", customerID).Find(&orders).Error
+	err := r.db.WithContext(ctx).Preload("Items").Where("customer_id = ?", customerID).Order("created_at desc").Find(&orders).Error
+	return orders, err
+}
+
+func (r *orderRepository) GetByRestaurantID(ctx context.Context, restaurantID string) ([]domain.Order, error) {
+	var orders []domain.Order
+	err := r.db.WithContext(ctx).Preload("Items").Where("restaurant_id = ?", restaurantID).Order("created_at desc").Find(&orders).Error
 	return orders, err
 }
 

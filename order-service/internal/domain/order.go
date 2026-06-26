@@ -42,12 +42,15 @@ type OrderRepository interface {
 	Create(ctx context.Context, order *Order) error
 	GetByID(ctx context.Context, id string) (*Order, error)
 	GetByCustomerID(ctx context.Context, customerID string) ([]Order, error)
+	GetByRestaurantID(ctx context.Context, restaurantID string) ([]Order, error)
 	UpdateStatus(ctx context.Context, id string, status OrderStatus) error
 }
 
 type OrderUsecase interface {
 	Checkout(ctx context.Context, customerID, restaurantID, deliveryAddress string, items []OrderItem) (*Order, error)
 	GetCustomerOrders(ctx context.Context, customerID string) ([]Order, error)
+	GetMerchantOrders(ctx context.Context, restaurantID string) ([]Order, error)
+	UpdateOrderStatus(ctx context.Context, orderID string, status OrderStatus) error
 	MarkOrderAsPaid(ctx context.Context, orderID string) error
 	MarkOrderAsFailed(ctx context.Context, orderID string) error
 }
